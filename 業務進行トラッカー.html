@@ -1,0 +1,1016 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>業務進行トラッカー</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --border: #d9e2ec;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: #e0ebff;
+  --accent-contrast: #ffffff;
+  --status-pending: #64748b;
+  --status-pending-bg: #eef2f6;
+  --status-active: #b45309;
+  --status-active-bg: #fef3c7;
+  --status-done: #047857;
+  --status-done-bg: #d8f3e6;
+  --danger: #be123c;
+  --danger-hover: #9f1239;
+  --danger-soft: #fde2e7;
+  --shadow: rgba(15, 23, 42, 0.08);
+  --font-sans: 'Zen Kaku Gothic New', 'Hiragino Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220;
+    --surface: #131c2e;
+    --surface-alt: #1b2740;
+    --border: #2b3a56;
+    --text-primary: #eef2f8;
+    --text-secondary: #b7c2d6;
+    --text-muted: #7c8aa8;
+    --accent: #5b8def;
+    --accent-hover: #7ea4f2;
+    --accent-soft: #1c2d52;
+    --accent-contrast: #061024;
+    --status-pending: #8794ab;
+    --status-pending-bg: #1c2740;
+    --status-active: #f2b84b;
+    --status-active-bg: #3a2c10;
+    --status-done: #37c78f;
+    --status-done-bg: #0f3327;
+    --danger: #f1657f;
+    --danger-hover: #f58aa0;
+    --danger-soft: #3a1620;
+    --shadow: rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #131c2e;
+  --surface-alt: #1b2740;
+  --border: #2b3a56;
+  --text-primary: #eef2f8;
+  --text-secondary: #b7c2d6;
+  --text-muted: #7c8aa8;
+  --accent: #5b8def;
+  --accent-hover: #7ea4f2;
+  --accent-soft: #1c2d52;
+  --accent-contrast: #061024;
+  --status-pending: #8794ab;
+  --status-pending-bg: #1c2740;
+  --status-active: #f2b84b;
+  --status-active-bg: #3a2c10;
+  --status-done: #37c78f;
+  --status-done-bg: #0f3327;
+  --danger: #f1657f;
+  --danger-hover: #f58aa0;
+  --danger-soft: #3a1620;
+  --shadow: rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+#app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.banner {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.security-note {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.security-note b { color: var(--accent); }
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.header-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 2px;
+  letter-spacing: 0.01em;
+}
+.subtitle { color: var(--text-secondary); font-size: 13px; margin: 0; }
+.theme-field { display: flex; flex-direction: column; gap: 4px; min-width: 220px; }
+.theme-field label { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+.theme-field input {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.updated { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.progress-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.progress-pct {
+  font-family: var(--font-mono);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.progress-pct .pct-sign { font-size: 16px; opacity: 0.7; }
+.progress-info { flex: 1; min-width: 140px; }
+.progress-label { font-weight: 700; font-size: 13px; }
+.progress-sub { color: var(--text-secondary); font-size: 12.5px; font-family: var(--font-mono); }
+.progress-bar {
+  margin-top: 12px;
+  height: 10px;
+  background: var(--surface-alt);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  background: var(--status-done);
+  transition: width 0.25s ease;
+}
+
+.stepper {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  padding: 6px 2px 10px;
+}
+.stepper-item {
+  position: relative;
+  flex: 0 0 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding-top: 2px;
+}
+.stepper-item.has-line::before {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: -46px;
+  width: 92px;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+.dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid transparent;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+.dot-pending { background: var(--status-pending-bg); color: var(--status-pending); border-color: var(--border); }
+.dot-active { background: var(--status-active-bg); color: var(--status-active); border-color: var(--status-active); }
+.dot-done { background: var(--status-done-bg); color: var(--status-done); border-color: var(--status-done); }
+.stepper-label { font-size: 11px; color: var(--text-secondary); max-width: 90px; overflow-wrap: anywhere; }
+
+.template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.template-btn {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.template-btn.is-current { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.template-btn.is-armed { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); font-weight: 700; }
+
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+.step-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--surface-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 4px solid var(--status-pending);
+}
+.step-card.status-active { border-left-color: var(--status-active); }
+.step-card.status-done { border-left-color: var(--status-done); }
+
+.step-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.step-num { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); font-weight: 700; }
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+.status-pill.status-pending { background: var(--status-pending-bg); color: var(--status-pending); }
+.status-pill.status-active { background: var(--status-active-bg); color: var(--status-active); }
+.status-pill.status-done { background: var(--status-done-bg); color: var(--status-done); }
+
+.step-label-input {
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 2px 4px;
+  border-radius: 6px;
+  width: 100%;
+}
+.step-label-input:hover, .step-label-input:focus { border-color: var(--border); background: var(--surface); }
+
+.date-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.date-row label { font-size: 10.5px; color: var(--text-muted); display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 110px; }
+.date-row input[type="date"] {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 6px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.date-row input:disabled { opacity: 0.55; }
+
+.step-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.step-util-row { display: flex; gap: 6px; justify-content: flex-end; }
+
+.btn {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--accent-contrast); }
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-success { background: var(--status-done); color: #ffffff; }
+.btn-success:hover:not(:disabled) { opacity: 0.9; }
+.btn-outline { background: transparent; border-color: var(--border); color: var(--text-secondary); }
+.btn-outline:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-danger-outline { background: transparent; border-color: var(--danger); color: var(--danger); }
+.btn-danger-outline:hover:not(:disabled) { background: var(--danger-soft); }
+.btn-ghost { background: transparent; color: var(--text-muted); border: none; padding: 4px 8px; font-size: 13px; }
+.btn-ghost:hover:not(:disabled) { color: var(--text-primary); }
+.btn-icon { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 15px; font-weight: 700; line-height: 1; padding: 0; }
+.btn-icon:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+.locked-note { font-size: 12px; color: var(--status-done); font-weight: 700; }
+
+.add-step-row { display: flex; justify-content: flex-start; margin-top: 10px; }
+
+.counter-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-alt);
+  flex-wrap: wrap;
+}
+.counter-label-input {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 3px 5px;
+  border-radius: 6px;
+  flex: 1;
+  min-width: 120px;
+}
+.counter-label-input:hover, .counter-label-input:focus { border-color: var(--border); background: var(--surface); }
+.counter-controls { display: flex; align-items: center; gap: 8px; }
+.counter-value { font-family: var(--font-mono); font-size: 17px; font-weight: 700; min-width: 32px; text-align: center; }
+.counter-footer { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+.export-note { font-size: 12.5px; color: var(--text-secondary); margin: 0 0 12px; }
+.export-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+details.guide { cursor: default; }
+details.guide summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  list-style: none;
+}
+details.guide summary::-webkit-details-marker { display: none; }
+.guide-body { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: var(--text-secondary); }
+.guide-body h4 { margin: 0 0 4px; font-size: 13px; color: var(--text-primary); }
+.guide-body ul { margin: 4px 0; padding-left: 20px; }
+.guide-body li { margin-bottom: 3px; }
+.guide-body code { font-family: var(--font-mono); background: var(--surface-alt); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+footer.app-footer { text-align: center; font-size: 11px; color: var(--text-muted); padding-top: 8px; }
+
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.chart-block { display: flex; flex-direction: column; gap: 8px; }
+.chart-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); }
+.chart-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.chart-svg { width: 100%; max-width: 200px; height: auto; overflow: visible; }
+.chart-svg-bar { max-width: 100%; }
+.chart-legend { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--text-secondary); }
+.chart-legend-item { display: flex; align-items: center; gap: 6px; }
+.chart-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.chart-empty { font-size: 12px; color: var(--text-muted); padding: 10px 0; }
+
+@media (max-width: 480px) {
+  .header-top { flex-direction: column; align-items: stretch; }
+  .theme-field { min-width: 0; }
+  .progress-pct { font-size: 28px; }
+}
+</style>
+
+<div id="app">読み込み中…</div>
+
+<script type="module">
+const TEMPLATES = {
+  generic: { name: '汎用（シンプル）', steps: ['計画', '準備', '実行', '確認', '報告', '振り返り'] },
+  cae: { name: 'CAE解析', steps: ['目的・解析計画', '打ち合わせ', '条件検討', 'CAE実行', '結果整理', '考察', '報告書', '振り返り'] },
+  sales: { name: '商談・提案', steps: ['目的・方針検討', '顧客打ち合わせ', '提案内容検討', '資料作成', '提案・商談実施', 'フィードバック整理', '社内報告', '振り返り'] },
+  doc: { name: '資料・報告作成', steps: ['目的整理', '構成検討', '打ち合わせ', 'ドラフト作成', 'レビュー', '修正', '最終化・提出', '振り返り'] },
+};
+const TEMPLATE_ORDER = ['generic', 'cae', 'sales', 'doc'];
+
+function freshStepsFor(templateKey, seqRef) {
+  const t = TEMPLATES[templateKey] || TEMPLATES.generic;
+  return t.steps.map((label) => {
+    seqRef.n += 1;
+    return { id: 's' + seqRef.n, label, status: 'pending', start: '', end: '' };
+  });
+}
+
+function defaultState() {
+  const seqRef = { n: 100 };
+  const steps = freshStepsFor('generic', seqRef);
+  return {
+    templateId: 'generic',
+    theme: '',
+    steps,
+    counters: [
+      { id: 'c1', label: '打ち合わせ回数', value: 0 },
+      { id: 'c2', label: 'やり直し回数', value: 0 },
+      { id: 'c3', label: '手戻り回数', value: 0 },
+    ],
+    _seq: seqRef.n,
+    updatedAt: null,
+  };
+}
+
+let state = defaultState();
+let db = null;
+let userCap = null;
+let downloadsCap = null;
+let readOnly = false;
+let dbAvailable = false;
+let armed = null;
+let armedTimer = null;
+
+const root = document.getElementById('app');
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function nextId(prefix) {
+  state._seq = (state._seq || 0) + 1;
+  return prefix + state._seq;
+}
+
+function arm(key) {
+  if (armed === key) {
+    clearTimeout(armedTimer);
+    armed = null;
+    return true;
+  }
+  armed = key;
+  clearTimeout(armedTimer);
+  armedTimer = setTimeout(() => { armed = null; render(); }, 4000);
+  render();
+  return false;
+}
+
+let pendingWrites = 0;
+let writeTail = Promise.resolve();
+
+async function persist(next) {
+  state = next;
+  state.updatedAt = new Date().toISOString();
+  render();
+  if (!db) return;
+  pendingWrites += 1;
+  const ref = db.doc('state/current');
+  const snapshotToWrite = state;
+  const myWrite = writeTail.then(() => ref.set(snapshotToWrite));
+  writeTail = myWrite.catch(() => {}); // never let one failure poison later writes
+  try {
+    await myWrite;
+    if (readOnly) { readOnly = false; render(); }
+  } catch (e) {
+    readOnly = true;
+    render();
+  } finally {
+    pendingWrites = Math.max(0, pendingWrites - 1);
+  }
+}
+
+// ---- step actions ----
+function startStep(id) {
+  const steps = state.steps.map((s) => (s.id === id ? { ...s, status: 'active', start: s.start || todayStr() } : s));
+  persist({ ...state, steps });
+}
+function completeStep(id) {
+  if (!arm('complete:' + id)) return;
+  const steps = state.steps.map((s) => (s.id === id ? { ...s, status: 'done', end: s.end || todayStr() } : s));
+  persist({ ...state, steps });
+}
+function revertStep(id) {
+  const steps = state.steps.map((s) => (s.id === id ? { ...s, status: 'pending' } : s));
+  persist({ ...state, steps });
+}
+function setStepDate(id, field, value) {
+  const steps = state.steps.map((s) => (s.id === id ? { ...s, [field]: value } : s));
+  persist({ ...state, steps });
+}
+function setStepLabel(id, value) {
+  const steps = state.steps.map((s) => (s.id === id ? { ...s, label: value.slice(0, 60) } : s));
+  persist({ ...state, steps });
+}
+function addStep() {
+  const steps = [...state.steps, { id: nextId('s'), label: '新しいステップ', status: 'pending', start: '', end: '' }];
+  persist({ ...state, steps });
+}
+function deleteStep(id) {
+  if (!arm('delete-step:' + id)) return;
+  const steps = state.steps.filter((s) => s.id !== id);
+  persist({ ...state, steps });
+}
+function moveStep(id, dir) {
+  const i = state.steps.findIndex((s) => s.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= state.steps.length) return;
+  const steps = state.steps.slice();
+  [steps[i], steps[j]] = [steps[j], steps[i]];
+  persist({ ...state, steps });
+}
+function applyTemplate(key) {
+  if (!arm('apply-template:' + key)) return;
+  const seqRef = { n: state._seq || 100 };
+  const steps = freshStepsFor(key, seqRef);
+  persist({ ...state, templateId: key, steps, _seq: seqRef.n });
+}
+
+// ---- counter actions ----
+function bumpCounter(id, delta) {
+  const counters = state.counters.map((c) => (c.id === id ? { ...c, value: Math.max(0, c.value + delta) } : c));
+  persist({ ...state, counters });
+}
+function setCounterLabel(id, value) {
+  const counters = state.counters.map((c) => (c.id === id ? { ...c, label: value.slice(0, 40) } : c));
+  persist({ ...state, counters });
+}
+function addCounter() {
+  const counters = [...state.counters, { id: nextId('c'), label: '新しいカウンター', value: 0 }];
+  persist({ ...state, counters });
+}
+function deleteCounter(id) {
+  if (!arm('delete-counter:' + id)) return;
+  const counters = state.counters.filter((c) => c.id !== id);
+  persist({ ...state, counters });
+}
+function resetCounters() {
+  if (!arm('reset:counters')) return;
+  const counters = state.counters.map((c) => ({ ...c, value: 0 }));
+  persist({ ...state, counters });
+}
+function resetProgress() {
+  if (!arm('reset:progress')) return;
+  const steps = state.steps.map((s) => ({ ...s, status: 'pending', start: '', end: '' }));
+  persist({ ...state, steps });
+}
+function setTheme(value) {
+  persist({ ...state, theme: value.slice(0, 60) });
+}
+
+// ---- export ----
+function docStyle() {
+  return '<style>body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;color:#0f172a;padding:32px;max-width:720px;margin:0 auto;}' +
+    'h1{font-size:20px;border-bottom:3px solid #2563eb;padding-bottom:8px;}' +
+    'h2{font-size:15px;color:#2563eb;margin-top:24px;}' +
+    'table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;}' +
+    'th,td{border:1px solid #d9e2ec;padding:6px 10px;text-align:left;}' +
+    'th{background:#eef2f6;}' +
+    '.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;}' +
+    '.pending{background:#eef2f6;color:#64748b;}.active{background:#fef3c7;color:#b45309;}.done{background:#d8f3e6;color:#047857;}' +
+    '.note{color:#94a3b8;font-size:11px;margin-top:28px;}' + CHART_CSS + '</style>';
+}
+function statusLabel(s) { return s === 'done' ? '完了' : s === 'active' ? '進行中' : '未着手'; }
+
+// ---- chart palettes (fixed categorical order; status colors stay reserved) ----
+const LIVE_PALETTE = {
+  pending: 'var(--status-pending)', active: 'var(--status-active)', done: 'var(--status-done)',
+  accent: 'var(--accent)', hole: 'var(--surface)', text: 'var(--text-primary)',
+  muted: 'var(--text-muted)', grid: 'var(--border)',
+  categorical: ['var(--accent)', '#7c3aed', '#0d9488', '#ea580c', '#db2777', 'var(--status-pending)'],
+};
+const STATIC_PALETTE = {
+  pending: '#64748b', active: '#b45309', done: '#047857',
+  accent: '#2563eb', hole: '#ffffff', text: '#0f172a',
+  muted: '#94a3b8', grid: '#d9e2ec',
+  categorical: ['#2563eb', '#7c3aed', '#0d9488', '#ea580c', '#db2777', '#475569'],
+};
+const CHART_CSS = '.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}' +
+  '.chart-block{display:flex;flex-direction:column;gap:8px;}' +
+  '.chart-title{font-size:12.5px;font-weight:700;}' +
+  '.chart-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}' +
+  '.chart-svg{width:100%;max-width:220px;height:auto;overflow:visible;}' +
+  '.chart-svg-bar{max-width:100%;}' +
+  '.chart-legend{display:flex;flex-direction:column;gap:5px;font-size:11.5px;}' +
+  '.chart-legend-item{display:flex;align-items:center;gap:6px;}' +
+  '.chart-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block;}' +
+  '.chart-empty{font-size:12px;color:#94a3b8;padding:10px 0;}';
+
+function pieChartHTML(items, title, palette) {
+  const total = items.reduce((s, i) => s + i.value, 0);
+  const cx = 70, cy = 70, r = 62, rInner = 38;
+  let a = -Math.PI / 2;
+  let paths = '';
+  if (total > 0) {
+    items.forEach((it) => {
+      const frac = it.value / total;
+      if (frac <= 0) return;
+      const a0 = a, a1 = a + frac * 2 * Math.PI;
+      const x0 = (cx + r * Math.cos(a0)).toFixed(2), y0 = (cy + r * Math.sin(a0)).toFixed(2);
+      const x1 = (cx + r * Math.cos(a1)).toFixed(2), y1 = (cy + r * Math.sin(a1)).toFixed(2);
+      const large = (a1 - a0) > Math.PI ? 1 : 0;
+      paths += '<path d="M' + cx + ',' + cy + ' L' + x0 + ',' + y0 + ' A' + r + ',' + r + ' 0 ' + large + ' 1 ' + x1 + ',' + y1 + ' Z" style="fill:' + it.color + '" stroke="' + palette.hole + '" stroke-width="2"></path>';
+      a = a1;
+    });
+  }
+  const hole = '<circle cx="' + cx + '" cy="' + cy + '" r="' + rInner + '" style="fill:' + palette.hole + '"></circle>';
+  const centerText = total > 0
+    ? '<text x="' + cx + '" y="' + (cy - 3) + '" text-anchor="middle" font-size="18" font-weight="700" style="fill:' + palette.text + '">' + total + '</text><text x="' + cx + '" y="' + (cy + 13) + '" text-anchor="middle" font-size="9" style="fill:' + palette.muted + '">件</text>'
+    : '<text x="' + cx + '" y="' + (cy + 4) + '" text-anchor="middle" font-size="10" style="fill:' + palette.muted + '">データなし</text>';
+  const legend = items.map((it) => '<div class="chart-legend-item"><span class="chart-dot" style="background:' + it.color + '"></span>' + esc(it.label) + '：' + it.value + '件' + (total ? '（' + Math.round(it.value / total * 100) + '%）' : '') + '</div>').join('');
+  return '<div class="chart-block"><div class="chart-title">' + title + '</div><div class="chart-wrap"><svg viewBox="0 0 140 140" class="chart-svg">' + paths + hole + centerText + '</svg><div class="chart-legend">' + legend + '</div></div></div>';
+}
+
+function barChartHTML(items, title, palette) {
+  if (!items.length) return '<div class="chart-block"><div class="chart-title">' + title + '</div><div class="chart-empty">データがありません</div></div>';
+  const max = Math.max(1, ...items.map((i) => i.value));
+  const barH = 20, gap = 12, chartW = 230;
+  const rows = items.map((it, i) => {
+    const y = i * (barH + gap + 14);
+    const w = Math.max(2, Math.round((it.value / max) * chartW));
+    return '<g transform="translate(0,' + y + ')">' +
+      '<text x="0" y="10" font-size="11" style="fill:' + palette.text + '">' + esc(it.label) + '</text>' +
+      '<rect x="0" y="16" width="' + chartW + '" height="' + barH + '" rx="5" style="fill:' + palette.grid + '" opacity="0.5"></rect>' +
+      '<rect x="0" y="16" width="' + w + '" height="' + barH + '" rx="5" style="fill:' + it.color + '"></rect>' +
+      '<text x="' + (w + 8) + '" y="' + (16 + barH / 2 + 4) + '" font-size="12" font-weight="700" style="fill:' + palette.text + '">' + it.value + '</text>' +
+      '</g>';
+  }).join('');
+  const totalH = items.length * (barH + gap + 14) + 6;
+  return '<div class="chart-block"><div class="chart-title">' + title + '</div><svg viewBox="0 0 280 ' + totalH + '" class="chart-svg chart-svg-bar" preserveAspectRatio="xMinYMin meet">' + rows + '</svg></div>';
+}
+
+function lineChartHTML(series, title, palette) {
+  if (series.length < 2) {
+    return '<div class="chart-block"><div class="chart-title">' + title + '</div><div class="chart-empty">完了日が入力済みのステップが2件以上になると表示されます</div></div>';
+  }
+  const w = 320, h = 150, padL = 22, padR = 12, padT = 16, padB = 24;
+  const maxY = Math.max(...series.map((p) => p.y));
+  const n = series.length;
+  const stepX = (w - padL - padR) / (n - 1);
+  const pts = series.map((p, i) => ({
+    x: padL + i * stepX,
+    y: padT + (h - padT - padB) * (1 - p.y / maxY),
+    label: p.x, val: p.y,
+  }));
+  const path = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const area = path + ' L' + pts[n - 1].x.toFixed(1) + ',' + (h - padB) + ' L' + pts[0].x.toFixed(1) + ',' + (h - padB) + ' Z';
+  const dots = pts.map((p) => '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3.5" style="fill:' + palette.accent + '"></circle>').join('');
+  const showLabel = (i) => i === 0 || i === n - 1 || n <= 6;
+  const labels = pts.map((p, i) => showLabel(i) ? '<text x="' + p.x.toFixed(1) + '" y="' + (h - 8) + '" font-size="9" text-anchor="middle" style="fill:' + palette.muted + '">' + esc(p.label.slice(5)) + '</text>' : '').join('');
+  const gridLine = '<line x1="' + padL + '" y1="' + (h - padB) + '" x2="' + (w - padR) + '" y2="' + (h - padB) + '" style="stroke:' + palette.grid + '" stroke-width="1"></line>';
+  return '<div class="chart-block"><div class="chart-title">' + title + '</div><svg viewBox="0 0 ' + w + ' ' + h + '" class="chart-svg" style="max-width:100%">' +
+    gridLine +
+    '<path d="' + area + '" style="fill:' + palette.accent + '" opacity="0.12"></path>' +
+    '<path d="' + path + '" style="fill:none;stroke:' + palette.accent + '" stroke-width="2.5" stroke-linecap="round"></path>' +
+    dots + labels +
+    '</svg></div>';
+}
+
+function buildStatusPie(palette) {
+  const counts = { pending: 0, active: 0, done: 0 };
+  state.steps.forEach((s) => { counts[s.status] = (counts[s.status] || 0) + 1; });
+  const items = [
+    { label: '未着手', value: counts.pending, color: palette.pending },
+    { label: '進行中', value: counts.active, color: palette.active },
+    { label: '完了', value: counts.done, color: palette.done },
+  ];
+  return pieChartHTML(items, '🟢 工程ステータス比率', palette);
+}
+function buildCounterBar(palette) {
+  const items = state.counters.map((c, i) => ({ label: c.label, value: c.value, color: palette.categorical[i % palette.categorical.length] }));
+  return barChartHTML(items, '📊 カウンター集計', palette);
+}
+function buildProgressLine(palette) {
+  const series = state.steps
+    .filter((s) => s.status === 'done' && s.end)
+    .map((s) => ({ x: s.end }))
+    .sort((a, b) => a.x.localeCompare(b.x))
+    .map((p, i) => ({ x: p.x, y: i + 1 }));
+  return lineChartHTML(series, '📈 完了ステップ数の累積推移', palette);
+}
+
+async function exportPlan() {
+  const rows = state.steps.map((s, i) =>
+    '<tr><td>' + (i + 1) + '</td><td>' + esc(s.label) + '</td><td><span class="pill ' + s.status + '">' + statusLabel(s.status) + '</span></td><td>' + (s.start || '—') + '</td><td>' + (s.end || '—') + '</td></tr>'
+  ).join('');
+  const html = '<!doctype html><html><head><meta charset="utf-8">' + docStyle() + '</head><body>' +
+    '<h1>業務計画書（進行テンプレート）</h1>' +
+    '<p><b>テーマ：</b>' + esc(state.theme || '（未設定）') + '　<b>テンプレート：</b>' + esc(TEMPLATES[state.templateId]?.name || '') + '</p>' +
+    '<h2>工程一覧</h2><table><tr><th>#</th><th>工程</th><th>状態</th><th>開始日</th><th>完了日</th></tr>' + rows + '</table>' +
+    '<h2>現在の状況（グラフ）</h2><div class="charts-grid">' + buildStatusPie(STATIC_PALETTE) + '</div>' +
+    '<p class="note">本ファイルは業務進行トラッカーから自動生成された計画テンプレートです。目的・背景・詳細条件などの本文は、このファイルを開いて追記してください。</p>' +
+    '</body></html>';
+  await saveFile((state.theme || '業務計画書') + '_業務計画書.html', html);
+}
+
+async function exportReport() {
+  const doneCount = state.steps.filter((s) => s.status === 'done').length;
+  const pct = state.steps.length ? Math.round((doneCount / state.steps.length) * 100) : 0;
+  const rows = state.steps.map((s, i) =>
+    '<tr><td>' + (i + 1) + '</td><td>' + esc(s.label) + '</td><td><span class="pill ' + s.status + '">' + statusLabel(s.status) + '</span></td><td>' + (s.start || '—') + '</td><td>' + (s.end || '—') + '</td></tr>'
+  ).join('');
+  const charts = buildStatusPie(STATIC_PALETTE) + buildCounterBar(STATIC_PALETTE) + buildProgressLine(STATIC_PALETTE);
+  const html = '<!doctype html><html><head><meta charset="utf-8">' + docStyle() + '</head><body>' +
+    '<h1>業務報告書（進行スナップショット）</h1>' +
+    '<p><b>テーマ：</b>' + esc(state.theme || '（未設定）') + '　<b>全体進捗：</b>' + pct + '%（' + doneCount + '/' + state.steps.length + '）</p>' +
+    '<h2>工程状況</h2><table><tr><th>#</th><th>工程</th><th>状態</th><th>開始日</th><th>完了日</th></tr>' + rows + '</table>' +
+    '<h2>グラフでみる進捗</h2><div class="charts-grid">' + charts + '</div>' +
+    '<p class="note">本ファイルは業務進行トラッカーから自動生成された報告テンプレートです。考察・結論などの本文は、このファイルを開いて追記してください。</p>' +
+    '</body></html>';
+  await saveFile((state.theme || '業務報告書') + '_業務報告書.html', html);
+}
+
+async function exportCsv() {
+  const lines = ['種別,項目,状態または値,開始日,完了日'];
+  state.steps.forEach((s) => lines.push(['工程', s.label, statusLabel(s.status), s.start, s.end].map(csvCell).join(',')));
+  state.counters.forEach((c) => lines.push(['カウンター', c.label, c.value, '', ''].map(csvCell).join(',')));
+  const csv = '﻿' + lines.join('\r\n');
+  await saveFile((state.theme || '進捗データ') + '_進捗データ.csv', csv);
+}
+function csvCell(v) {
+  const s = String(v == null ? '' : v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+async function saveFile(filename, data) {
+  if (!downloadsCap) {
+    alertFallback('この表示環境ではファイル書き出しに対応していません。');
+    return;
+  }
+  try {
+    await downloadsCap.save({ filename, data });
+  } catch (e) {
+    // declined / rate_limited / etc. — silent is fine, viewer already saw the native prompt or decline
+  }
+}
+function alertFallback(msg) {
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:999;';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ---- render ----
+function statusMeta(status) {
+  if (status === 'done') return { label: '完了', cls: 'done' };
+  if (status === 'active') return { label: '進行中', cls: 'active' };
+  return { label: '未着手', cls: 'pending' };
+}
+
+function counterRow(c) {
+  return '<div class="counter-row">' +
+    '<input class="counter-label-input" data-action="set-counter-label" data-id="' + c.id + '" value="' + esc(c.label) + '" ' + (readOnly ? 'disabled' : '') + ' maxlength="40">' +
+    '<div class="counter-controls">' +
+    '<button class="btn btn-icon" data-action="counter-minus" data-id="' + c.id + '" ' + (readOnly ? 'disabled' : '') + '>−</button>' +
+    '<span class="counter-value">' + c.value + '</span>' +
+    '<button class="btn btn-icon" data-action="counter-plus" data-id="' + c.id + '" ' + (readOnly ? 'disabled' : '') + '>＋</button>' +
+    '<button class="btn btn-ghost" data-action="delete-counter" data-id="' + c.id + '" ' + (readOnly ? 'disabled' : '') + '>' + (armed === 'delete-counter:' + c.id ? '本当に削除？' : '🗑') + '</button>' +
+    '</div></div>';
+}
+
+function render() {
+  const doneCount = state.steps.filter((s) => s.status === 'done').length;
+  const total = state.steps.length || 1;
+  const pct = Math.round((doneCount / total) * 100);
+
+  root.innerHTML =
+    (readOnly ? '<div class="banner">🔒 読み取り専用モードです（編集権限がないため、表示のみ可能です）</div>' : '') +
+    '<div class="security-note"><span>🔒</span><span><b>非公開設計：</b>このデータは「編集可能なアクセス権」を持つ人にしか表示されません。リンクを知っているだけの閲覧者には内容は表示されない設定です。詳しくは下部の手順書をご覧ください。</span></div>' +
+
+    '<header class="header"><div class="header-top">' +
+      '<div><h1>業務進行トラッカー</h1><p class="subtitle">工程管理 × カウンター × 出力 — どんな業務にも使える進行ダッシュボード</p></div>' +
+      '<div class="theme-field"><label for="theme-input">テーマ名（任意）</label>' +
+      '<input id="theme-input" data-action="set-theme" type="text" maxlength="60" placeholder="例：A社向け提案資料作成" value="' + esc(state.theme) + '" ' + (readOnly ? 'disabled' : '') + '></div>' +
+    '</div><div class="updated">最終更新：' + (state.updatedAt ? new Date(state.updatedAt).toLocaleString('ja-JP') : '—') + (dbAvailable ? '' : '　（この表示ではデータが保存されません）') + '</div></header>' +
+
+    '<section class="card progress-card"><div class="progress-top">' +
+      '<div class="progress-pct">' + pct + '<span class="pct-sign">%</span></div>' +
+      '<div class="progress-info"><div class="progress-label">全体進捗</div><div class="progress-sub">' + doneCount + ' / ' + state.steps.length + ' ステップ完了</div></div>' +
+      '<button class="btn btn-danger-outline" data-action="reset-progress" ' + (readOnly ? 'disabled' : '') + '>' + (armed === 'reset:progress' ? '本当にリセット？（もう一度押す）' : '② 全体進捗をリセット') + '</button>' +
+    '</div><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div></section>' +
+
+    '<section class="card"><h2 class="card-title">工程フロー</h2><div class="stepper">' +
+      state.steps.map((s, i) => {
+        const meta = statusMeta(s.status);
+        return '<div class="stepper-item' + (i > 0 ? ' has-line' : '') + '">' +
+          '<div class="dot dot-' + meta.cls + '">' + (s.status === 'done' ? '✓' : i + 1) + '</div>' +
+          '<div class="stepper-label">' + esc(s.label) + '</div></div>';
+      }).join('') +
+    '</div></section>' +
+
+    '<section class="card"><h2 class="card-title">ステップ構成（テンプレート切替・カスタム編集）</h2>' +
+      '<div class="template-row">' +
+        TEMPLATE_ORDER.map((key) => {
+          const armedKey = 'apply-template:' + key;
+          const cls = armed === armedKey ? 'is-armed' : (state.templateId === key ? 'is-current' : '');
+          const label = armed === armedKey ? '本当に適用？（進捗がリセットされます）' : TEMPLATES[key].name;
+          return '<button class="template-btn ' + cls + '" data-action="apply-template" data-id="' + key + '" ' + (readOnly ? 'disabled' : '') + '>' + label + '</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="step-grid">' +
+        state.steps.map((s, i) => {
+          const meta = statusMeta(s.status);
+          const locked = s.status === 'done';
+          return '<div class="step-card status-' + meta.cls + '">' +
+            '<div class="step-card-head"><span class="step-num">STEP ' + (i + 1) + '</span><span class="status-pill status-' + meta.cls + '">' + meta.label + '</span></div>' +
+            '<input class="step-label-input" data-action="set-step-label" data-id="' + s.id + '" value="' + esc(s.label) + '" maxlength="60" ' + (readOnly ? 'disabled' : '') + '>' +
+            '<div class="date-row">' +
+              '<label>開始日<input type="date" data-action="set-date" data-id="' + s.id + '" data-field="start" value="' + s.start + '" ' + (locked || readOnly ? 'disabled' : '') + '></label>' +
+              '<label>完了日<input type="date" data-action="set-date" data-id="' + s.id + '" data-field="end" value="' + s.end + '" ' + (locked || readOnly ? 'disabled' : '') + '></label>' +
+            '</div>' +
+            '<div class="step-actions">' +
+              (s.status === 'pending' ? '<button class="btn btn-primary" data-action="start-step" data-id="' + s.id + '" ' + (readOnly ? 'disabled' : '') + '>開始する</button>' : '') +
+              (s.status === 'active' ? '<button class="btn btn-success" data-action="complete-step" data-id="' + s.id + '" ' + (readOnly ? 'disabled' : '') + '>' + (armed === 'complete:' + s.id ? '本当に完了？（もう一度押す）' : '完了する') + '</button><button class="btn btn-outline" data-action="revert-step" data-id="' + s.id + '" ' + (readOnly ? 'disabled' : '') + '>未着手に戻す</button>' : '') +
+              (s.status === 'done' ? '<span class="locked-note">🔒 完了済み（変更不可）</span>' : '') +
+            '</div>' +
+            '<div class="step-util-row">' +
+              '<button class="btn btn-ghost" data-action="move-step-up" data-id="' + s.id + '" ' + (readOnly || i === 0 ? 'disabled' : '') + '>▲</button>' +
+              '<button class="btn btn-ghost" data-action="move-step-down" data-id="' + s.id + '" ' + (readOnly || i === state.steps.length - 1 ? 'disabled' : '') + '>▼</button>' +
+              (s.status === 'pending' ? '<button class="btn btn-ghost" data-action="delete-step" data-id="' + s.id + '" ' + (readOnly ? 'disabled' : '') + '>' + (armed === 'delete-step:' + s.id ? '本当に削除？' : '🗑 削除') + '</button>' : '') +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="add-step-row"><button class="btn btn-outline" data-action="add-step" ' + (readOnly ? 'disabled' : '') + '>＋ ステップを追加</button></div>' +
+    '</section>' +
+
+    '<section class="card"><h2 class="card-title">カウンター（常に変更可能・ロックされません）</h2>' +
+      '<div class="counter-grid">' + state.counters.map(counterRow).join('') + '</div>' +
+      '<div class="counter-footer">' +
+        '<button class="btn btn-outline" data-action="add-counter" ' + (readOnly ? 'disabled' : '') + '>＋ カウンターを追加</button>' +
+        '<button class="btn btn-danger-outline" data-action="reset-counters" ' + (readOnly ? 'disabled' : '') + '>' + (armed === 'reset:counters' ? '本当にリセット？（もう一度押す）' : '① カウンターをリセット') + '</button>' +
+      '</div>' +
+    '</section>' +
+
+    '<section class="card"><h2 class="card-title">グラフで見る進捗</h2>' +
+      '<div class="charts-grid">' +
+        buildStatusPie(LIVE_PALETTE) +
+        buildCounterBar(LIVE_PALETTE) +
+        buildProgressLine(LIVE_PALETTE) +
+      '</div>' +
+    '</section>' +
+
+    '<section class="card"><h2 class="card-title">出力（プレビュー書き出し）</h2>' +
+      '<p class="export-note">現在の進行状況をもとに、書式付きの .html / .csv ファイルを生成してこの端末に保存します。Word/Excelで開いて編集できます（ファイルはどこにも送信されません）。</p>' +
+      '<div class="export-buttons">' +
+        '<button class="btn btn-outline" data-action="export-plan">📄 業務計画書を出力</button>' +
+        '<button class="btn btn-outline" data-action="export-report">📊 業務報告書を出力</button>' +
+        '<button class="btn btn-outline" data-action="export-csv">📑 進捗データを出力（CSV）</button>' +
+      '</div>' +
+    '</section>' +
+
+    '<details class="card guide"><summary>📘 使い方・保存場所・情報の取り扱いについて（手順書）</summary><div class="guide-body">' +
+      '<div class="guide-grid">' +
+        '<div><h4>①基本操作</h4><ul>' +
+          '<li>「開始する」でステップを進行中にします。</li>' +
+          '<li>「完了する」は2回押しで確定する安全策つきで、押すと<b>その場所には戻れません</b>（履歴として固定されます）。</li>' +
+          '<li>進行中のステップだけ「未着手に戻す」で戻せます。</li>' +
+          '<li>ステップ名はいつでも書き換えられます（進行には影響しません）。</li>' +
+        '</ul></div>' +
+        '<div><h4>②ステップ構成の一般化</h4><ul>' +
+          '<li>上部のボタンでテンプレート（CAE解析・商談・資料作成・汎用）を切り替えられます。切替は進捗をリセットするため2回押し確認が必要です。</li>' +
+          '<li>「＋ステップを追加」「▲▼で並べ替え」「🗑削除（未着手のみ）」で、好きな業務フローに合わせて自由に編集できます。</li>' +
+        '</ul></div>' +
+        '<div><h4>③カウンターとリセット</h4><ul>' +
+          '<li>カウンターは名前も含めて自由に追加・編集・削除でき、<b>完了しても絶対にロックされません</b>。</li>' +
+          '<li><code>① カウンターをリセット</code>：すべてのカウンター値を0に戻します（ステップ進捗には影響しません）。</li>' +
+          '<li><code>② 全体進捗をリセット</code>：すべてのステップを「未着手」に戻します（カウンター値には影響しません）。</li>' +
+          '<li>新しいテーマを始めるときは、テーマ名を書き換え、①②を両方押して0%の状態から始めてください。</li>' +
+        '</ul></div>' +
+        '<div><h4>④保存場所・起動方法</h4><ul>' +
+          '<li>これはファイルではなく、claude.ai上の「Artifact（アーティファクト）」という固定リンクを持つページです。パソコンのフォルダには保存されません。</li>' +
+          '<li>起動方法：claude.aiの「Artifacts」一覧からこのページを開くか、このチャットで表示されたリンクをブックマークしてアクセスしてください。どの端末からでも同じリンクで同じデータが開きます。</li>' +
+          '<li>入力した内容はこのページ自体に保存され（自動保存）、リロードしても消えません。</li>' +
+        '</ul></div>' +
+        '<div><h4>⑤共有と情報漏洩対策</h4><ul>' +
+          '<li>既定では非公開です。共有する場合は「編集可能」な相手にのみデータが表示される設定にしてあり、リンクを知っているだけの閲覧者には進行データが表示されません。</li>' +
+          '<li>それでも、テーマ名・ステップ名・カウンター名などの自由入力欄には、<b>実際の顧客名・金額・機密情報は入力しない</b>ことを推奨します（抽象的な名称での管理を推奨）。</li>' +
+          '<li>出力ファイル（計画書・報告書・CSV）はこの端末内で生成され、外部サーバーには送信されません。</li>' +
+        '</ul></div>' +
+        '<div><h4>⑥出力について</h4><ul>' +
+          '<li>「業務計画書」「業務報告書」「進捗データ」は、実際のWord/Excelファイルではなく、同等に開ける .html / .csv 形式です。</li>' +
+          '<li>Word/Excelで開いて、そのまま編集・保存できます。</li>' +
+        '</ul></div>' +
+      '</div>' +
+    '</div></details>' +
+
+    '<footer class="app-footer">業務進行トラッカー — どんな業務の進行管理にも使える汎用ダッシュボード</footer>';
+}
+
+// ---- events (delegated once on the stable root) ----
+root.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn || btn.tagName !== 'BUTTON') return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  switch (action) {
+    case 'start-step': startStep(id); break;
+    case 'complete-step': completeStep(id); break;
+    case 'revert-step': revertStep(id); break;
+    case 'add-step': addStep(); break;
+    case 'delete-step': deleteStep(id); break;
+    case 'move-step-up': moveStep(id, -1); break;
+    case 'move-step-down': moveStep(id, 1); break;
+    case 'apply-template': applyTemplate(id); break;
+    case 'counter-plus': bumpCounter(id, 1); break;
+    case 'counter-minus': bumpCounter(id, -1); break;
+    case 'add-counter': addCounter(); break;
+    case 'delete-counter': deleteCounter(id); break;
+    case 'reset-counters': resetCounters(); break;
+    case 'reset-progress': resetProgress(); break;
+    case 'export-plan': exportPlan(); break;
+    case 'export-report': exportReport(); break;
+    case 'export-csv': exportCsv(); break;
+  }
+});
+root.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.dataset && el.dataset.action === 'set-date') setStepDate(el.dataset.id, el.dataset.field, el.value);
+});
+root.addEventListener('focusout', (e) => {
+  const el = e.target;
+  if (!el.dataset) return;
+  if (el.id === 'theme-input') setTheme(el.value);
+  if (el.dataset.action === 'set-step-label') setStepLabel(el.dataset.id, el.value);
+  if (el.dataset.action === 'set-counter-label') setCounterLabel(el.dataset.id, el.value);
+});
+
+// ---- init ----
+async function init() {
+  render();
+  db = await window.claude.use('db');
+  userCap = await window.claude.use('user');
+  downloadsCap = await window.claude.use('downloads');
+  dbAvailable = !!db;
+
+  if (db) {
+    const ref = db.doc('state/current');
+    ref.onSnapshot(
+      (snap) => {
+        // Ignore snapshots that arrive while we have our own write in
+        // flight — an in-flight write can be superseded by a snapshot
+        // that still reflects the pre-write server state, which would
+        // otherwise silently erase whatever the user just added/changed.
+        if (pendingWrites > 0) return;
+        const data = snap && snap.exists ? snap.data() : null;
+        if (data && Array.isArray(data.steps)) {
+          state = data;
+        }
+        render();
+      },
+      (err) => {
+        if (err && (err.code === 'revoked')) { readOnly = true; render(); }
+      }
+    );
+  }
+}
+init();
+</script>
+
+</body></html>
